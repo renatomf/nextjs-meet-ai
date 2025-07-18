@@ -25,7 +25,7 @@ export const agentsRouter = createTRPCRouter({
         .returning();
 
     if (!updatedAgent) {
-      throw new TRPCError({ code: "NOT_FOUND", message: "not found" })
+      throw new TRPCError({ code: "NOT_FOUND", message: "Agent not found" })
     }
 
     return updatedAgent;
