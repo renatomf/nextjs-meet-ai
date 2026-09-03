@@ -1,36 +1,257 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# 🤖 Meet AI
 
-First, run the development server:
+### Plataforma de videoconferência SaaS com agentes de IA que participam das reuniões em tempo real
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+[![Next.js](https://img.shields.io/badge/Next.js-15.3.5-black?logo=next.js)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript)](https://www.typescriptlang.org)
+[![tRPC](https://img.shields.io/badge/API-tRPC-2596BE)](https://trpc.io)
+[![Drizzle](https://img.shields.io/badge/ORM-Drizzle-C5F74F)](https://orm.drizzle.team)
+[![Neon](https://img.shields.io/badge/DB-Neon%20Postgres-00E599)](https://neon.tech)
+[![Better Auth](https://img.shields.io/badge/Auth-Better%20Auth-6C47FF)](https://www.better-auth.com)
+[![Stream](https://img.shields.io/badge/Video%2FChat-Stream-005FFF)](https://getstream.io)
+[![Inngest](https://img.shields.io/badge/Jobs-Inngest-000000)](https://www.inngest.com)
+[![OpenAI](https://img.shields.io/badge/IA-OpenAI-412991?logo=openai)](https://openai.com)
+
+</div>
+
+---
+
+## 📋 Sobre o projeto
+
+**Meet AI** é uma plataforma SaaS de videoconferência onde o usuário pode criar **agentes de IA personalizados** — com instruções e "personalidade" próprias — que **participam ativamente das reuniões em tempo real**: ouvem, respondem por voz e mantêm contexto da conversa. Ao final da chamada, a plataforma gera automaticamente um **resumo estruturado** da reunião e permite que o usuário **continue a conversa com o agente** sobre o que foi discutido.
+
+> 💡 Este README foi elaborado a partir do `package.json` real do repositório, da estrutura de pastas pública (`src/`, `public/`, `drizzle.config.ts`) e do padrão de arquitetura conhecido de projetos "Meet AI" equivalentes (Next.js + Stream + tRPC + Drizzle/Neon + Better Auth + Inngest + OpenAI). Ajuste os detalhes finos conforme a implementação exata do seu fork.
+
+---
+
+## ✨ Funcionalidades
+
+| Funcionalidade | Descrição |
+|---|---|
+| 🧠 **Agentes de IA customizáveis** | Criação de agentes com instruções e personalidade próprias para diferentes tipos de reunião |
+| 🎥 **Videochamadas em tempo real** | Chamadas de alta qualidade via Stream Video, com o agente de IA como participante ativo |
+| 🗣️ **Resposta por voz em tempo real** | Pipeline de transcrição + OpenAI Realtime API para o agente responder durante a própria chamada |
+| 📝 **Transcrição ao vivo** | Transcrição automática com identificação de quem está falando |
+| 🎬 **Gravações automáticas** | Gravação da chamada com conteúdo pesquisável |
+| 📊 **Resumos pós-reunião** | Geração assíncrona (via Inngest + Agent Kit) de resumos estruturados com os principais pontos da reunião |
+| 💬 **Chat pós-reunião** | Interface de chat (Stream Chat) para continuar conversando com o agente sobre o conteúdo da reunião |
+| 🔐 **Autenticação completa** | Login/sessão via Better Auth |
+| ⚡ **API type-safe** | Camada de API com tRPC + TanStack Query, ponta a ponta tipada |
+| 🖼️ **Avatares gerados** | Avatares de agentes/usuários gerados via Dicebear |
+
+---
+
+## 🛠️ Tech Stack
+
+| Camada | Tecnologia |
+|---|---|
+| **Framework** | Next.js 15 (App Router), React 19 |
+| **UI** | Tailwind CSS 4, Radix UI, shadcn/ui, `cmdk`, `sonner`, `vaul` |
+| **API** | tRPC (client/server) + TanStack Query |
+| **Banco de dados** | PostgreSQL (Neon serverless) |
+| **ORM** | Drizzle ORM + Drizzle Kit (migrations/studio) |
+| **Autenticação** | Better Auth |
+| **Vídeo & Chat em tempo real** | Stream Video SDK (`@stream-io/video-react-sdk`, `@stream-io/node-sdk`) + Stream Chat (`stream-chat`, `stream-chat-react`) |
+| **IA conversacional (tempo real)** | OpenAI Realtime API via `@stream-io/openai-realtime-api` |
+| **IA (resumos/summaries)** | OpenAI SDK + `@inngest/agent-kit` |
+| **Jobs / eventos assíncronos** | Inngest |
+| **Avatares** | Dicebear |
+| **Formulários & validação** | React Hook Form + Zod |
+| **Tabelas / dados** | TanStack Table, Recharts |
+| **Dev tooling** | ngrok (túnel para webhooks do Stream em desenvolvimento) |
+| **Linguagem** | TypeScript 5 |
+
+---
+
+## 🏗️ Arquitetura
+
+```mermaid
+flowchart TB
+    User(["👤 Usuário"])
+
+    subgraph Client["Frontend — Next.js App Router (React 19)"]
+        UI["Dashboard: Agentes / Reuniões"]
+        VideoUI["Sala de vídeo<br/>(Stream Video React SDK)"]
+        ChatUI["Chat pós-reunião<br/>(Stream Chat React)"]
+    end
+
+    subgraph API["Camada de API"]
+        TRPC["tRPC Router<br/>(type-safe API)"]
+        Auth[["Better Auth<br/>Sessão / Login"]]
+    end
+
+    DB[("PostgreSQL — Neon<br/>via Drizzle ORM")]
+
+    subgraph StreamPlatform["Stream (infraestrutura de tempo real)"]
+        StreamVideo["Stream Video<br/>(chamadas, gravação)"]
+        StreamChat["Stream Chat<br/>(mensagens)"]
+        Webhook["Webhooks de eventos<br/>(call started, transcript ready...)"]
+    end
+
+    Realtime["OpenAI Realtime API<br/>(voz do agente durante a chamada)"]
+    Inngest[["Inngest + Agent Kit<br/>Workflows assíncronos"]]
+    OpenAI["OpenAI API<br/>(geração de resumos)"]
+
+    User --> UI
+    UI -- cria agentes/reuniões --> TRPC
+    TRPC -- valida sessão --> Auth
+    TRPC -- CRUD --> DB
+
+    User --> VideoUI
+    VideoUI -- entra na call --> StreamVideo
+    StreamVideo -- provisiona o agente como participante --> Realtime
+    Realtime -- transcreve e responde por voz --> StreamVideo
+
+    StreamVideo -- dispara eventos --> Webhook
+    Webhook -- aciona função --> Inngest
+    Inngest -- gera resumo estruturado --> OpenAI
+    Inngest -- salva transcript/resumo --> DB
+
+    User --> ChatUI
+    ChatUI -- consulta histórico da reunião --> StreamChat
+    ChatUI -- contexto da conversa --> DB
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Como funciona o fluxo
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. O usuário se autentica (**Better Auth**) e, pelo **dashboard**, cria **agentes de IA** (nome, instruções, personalidade) e agenda **reuniões**, tudo via **tRPC** com validação de tipos ponta a ponta.
+2. Ao iniciar uma reunião, o backend **provisiona o agente de IA como participante ativo** da chamada usando o **Stream Video SDK** (server-side, via `@stream-io/node-sdk`).
+3. Durante a chamada, o áudio passa por um **pipeline de transcrição em tempo real**, e a **OpenAI Realtime API** gera as respostas de voz do agente enquanto a conversa acontece — não depois.
+4. O **Stream** dispara **webhooks** conforme eventos da chamada ocorrem (início, fim, transcrição pronta). Em desenvolvimento, esses webhooks chegam via um túnel **ngrok** (`dev:webhook`).
+5. Esses eventos acionam funções do **Inngest**, que processam o transcript de forma assíncrona — sem travar a aplicação ao vivo — usando **Agent Kit** e a **API da OpenAI** para gerar um **resumo estruturado** da reunião.
+6. Resumo, transcript e metadados são persistidos no **PostgreSQL (Neon)** via **Drizzle ORM**.
+7. Após a reunião, o usuário pode abrir o **chat** (Stream Chat) e continuar a conversa com o agente, que tem acesso ao contexto da reunião registrada.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+> Ajuste nomes de tabelas, rotas tRPC e funções do Inngest conforme a implementação real em `src/`.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📁 Estrutura do projeto
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+nextjs-meet-ai/
+├── public/                  # Assets estáticos
+├── src/                     # Código-fonte (App Router, componentes, tRPC routers, lib)
+├── components.json          # Configuração do shadcn/ui
+├── drizzle.config.ts        # Configuração do Drizzle ORM / Drizzle Kit
+├── eslint.config.mjs
+├── next.config.ts
+├── postcss.config.mjs
+├── tsconfig.json
+├── package.json
+└── README.md
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## ⚙️ Pré-requisitos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Node.js** 20+
+- Um gerenciador de pacotes: `npm`, `yarn`, `pnpm` ou `bun`
+- Banco **PostgreSQL** (recomendado: [Neon](https://neon.tech))
+- Conta na [Stream](https://getstream.io/) (Video + Chat)
+- Chave de API da [OpenAI](https://platform.openai.com/) (Realtime API + Chat Completions)
+- Conta no [Inngest](https://www.inngest.com/)
+- [ngrok](https://ngrok.com/) (para expor webhooks do Stream em desenvolvimento local)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🔑 Variáveis de ambiente
+
+```bash
+# Banco de dados
+DATABASE_URL=
+
+# Better Auth
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:3000
+
+# Stream (Video + Chat)
+NEXT_PUBLIC_STREAM_VIDEO_API_KEY=
+STREAM_VIDEO_SECRET_KEY=
+NEXT_PUBLIC_STREAM_CHAT_API_KEY=
+STREAM_CHAT_SECRET_KEY=
+
+# OpenAI
+OPENAI_API_KEY=
+
+# Inngest
+INNGEST_EVENT_KEY=
+INNGEST_SIGNING_KEY=
+```
+
+> Nomes exatos das variáveis podem variar — confirme em `src/lib` / `src/db` do repositório.
+
+---
+
+## 🚀 Instalação e execução local
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/renatomf/nextjs-meet-ai.git
+cd nextjs-meet-ai
+
+# 2. Instale as dependências
+npm install
+
+# 3. Configure o .env (veja seção acima)
+
+# 4. Aplique o schema no banco de dados
+npm run db:push
+
+# 5. Rode o servidor de desenvolvimento
+npm run dev
+
+# 6. Em outro terminal, exponha os webhooks do Stream via ngrok
+npm run dev:webhook
+
+# 7. (Opcional) Rode o Inngest Dev Server para os workflows em background
+npx inngest-cli dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000) no navegador.
+
+---
+
+## 📜 Scripts disponíveis
+
+| Comando | Descrição |
+|---|---|
+| `npm run dev` | Inicia o servidor de desenvolvimento |
+| `npm run build` | Gera o build de produção |
+| `npm run start` | Inicia o servidor em modo produção |
+| `npm run lint` | Roda o ESLint no projeto |
+| `npm run db:push` | Aplica o schema do Drizzle no banco de dados |
+| `npm run db:studio` | Abre o Drizzle Studio (UI de administração do banco) |
+| `npm run dev:webhook` | Expõe `localhost:3000` via ngrok para receber webhooks do Stream |
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Documentar o schema do Drizzle (`src/db`)
+- [ ] Mapear todos os routers tRPC e suas procedures
+- [ ] Detalhar as funções do Inngest (`src/inngest` ou equivalente)
+- [ ] Adicionar testes automatizados
+- [ ] Definir licença do projeto
+
+---
+
+## 🤝 Contribuindo
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nome-da-feature`)
+3. Commit suas mudanças (`git commit -m 'feat: minha nova feature'`)
+4. Push para a branch (`git push origin feature/nome-da-feature`)
+5. Abra um Pull Request
+
+---
+
+<div align="center">
+
+Feito por [@renatomf](https://github.com/renatomf)
+
+</div>
