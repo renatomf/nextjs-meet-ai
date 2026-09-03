@@ -145,77 +145,6 @@ nextjs-meet-ai/
 └── README.md
 ```
 
----
-
-## ⚙️ Pré-requisitos
-
-- **Node.js** 20+
-- Um gerenciador de pacotes: `npm`, `yarn`, `pnpm` ou `bun`
-- Banco **PostgreSQL** (recomendado: [Neon](https://neon.tech))
-- Conta na [Stream](https://getstream.io/) (Video + Chat)
-- Chave de API da [OpenAI](https://platform.openai.com/) (Realtime API + Chat Completions)
-- Conta no [Inngest](https://www.inngest.com/)
-- [ngrok](https://ngrok.com/) (para expor webhooks do Stream em desenvolvimento local)
-
----
-
-## 🔑 Variáveis de ambiente
-
-```bash
-# Banco de dados
-DATABASE_URL=
-
-# Better Auth
-BETTER_AUTH_SECRET=
-BETTER_AUTH_URL=http://localhost:3000
-
-# Stream (Video + Chat)
-NEXT_PUBLIC_STREAM_VIDEO_API_KEY=
-STREAM_VIDEO_SECRET_KEY=
-NEXT_PUBLIC_STREAM_CHAT_API_KEY=
-STREAM_CHAT_SECRET_KEY=
-
-# OpenAI
-OPENAI_API_KEY=
-
-# Inngest
-INNGEST_EVENT_KEY=
-INNGEST_SIGNING_KEY=
-```
-
-> Nomes exatos das variáveis podem variar — confirme em `src/lib` / `src/db` do repositório.
-
----
-
-## 🚀 Instalação e execução local
-
-```bash
-# 1. Clone o repositório
-git clone https://github.com/renatomf/nextjs-meet-ai.git
-cd nextjs-meet-ai
-
-# 2. Instale as dependências
-npm install
-
-# 3. Configure o .env (veja seção acima)
-
-# 4. Aplique o schema no banco de dados
-npm run db:push
-
-# 5. Rode o servidor de desenvolvimento
-npm run dev
-
-# 6. Em outro terminal, exponha os webhooks do Stream via ngrok
-npm run dev:webhook
-
-# 7. (Opcional) Rode o Inngest Dev Server para os workflows em background
-npx inngest-cli dev
-```
-
-Abra [http://localhost:3000](http://localhost:3000) no navegador.
-
----
-
 ## 📜 Scripts disponíveis
 
 | Comando | Descrição |
@@ -240,15 +169,6 @@ Abra [http://localhost:3000](http://localhost:3000) no navegador.
 
 ---
 
-## 🤝 Contribuindo
-
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/nome-da-feature`)
-3. Commit suas mudanças (`git commit -m 'feat: minha nova feature'`)
-4. Push para a branch (`git push origin feature/nome-da-feature`)
-5. Abra um Pull Request
-
----
 
 <div align="center">
 
